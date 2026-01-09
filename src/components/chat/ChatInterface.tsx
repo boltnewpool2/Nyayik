@@ -33,13 +33,40 @@ export const ChatInterface = ({ isFullPage = false }: ChatInterfaceProps) => {
   const messagesEndRef = useRef<HTMLDivElement>(null);
   const scrollContainerRef = useRef<HTMLDivElement>(null);
 
+  const playSound = (type: 'send' | 'receive') => {
+    const audioContext = new (window.AudioContext || (window as any).webkitAudioContext)();
+    const oscillator = audioContext.createOscillator();
+    const gainNode = audioContext.createGain();
+
+    oscillator.connect(gainNode);
+    gainNode.connect(audioContext.destination);
+
+    if (type === 'send') {
+      oscillator.frequency.value = 800;
+      gainNode.gain.setValueAtTime(0.1, audioContext.currentTime);
+      gainNode.gain.exponentialRampToValueAtTime(0.01, audioContext.currentTime + 0.1);
+      oscillator.start(audioContext.currentTime);
+      oscillator.stop(audioContext.currentTime + 0.1);
+    } else {
+      oscillator.frequency.value = 600;
+      gainNode.gain.setValueAtTime(0.1, audioContext.currentTime);
+      gainNode.gain.exponentialRampToValueAtTime(0.01, audioContext.currentTime + 0.15);
+      oscillator.start(audioContext.currentTime);
+      oscillator.stop(audioContext.currentTime + 0.15);
+    }
+  };
+
   const scrollToBottom = () => {
-    messagesEndRef.current?.scrollIntoView({ behavior: "smooth" });
+    if (!isFullPage) {
+      messagesEndRef.current?.scrollIntoView({ behavior: "smooth" });
+    }
   };
 
   useEffect(() => {
-    scrollToBottom();
-  }, [messages, isLoading]);
+    if (!isFullPage) {
+      scrollToBottom();
+    }
+  }, [messages, isLoading, isFullPage]);
 
   const handleSendMessage = async () => {
     if (!input.trim() || isLoading) return;
@@ -50,6 +77,7 @@ export const ChatInterface = ({ isFullPage = false }: ChatInterfaceProps) => {
       isBot: false,
     };
 
+    playSound('send');
     setMessages((prev) => [...prev, userMessage]);
     setInput("");
     setIsLoading(true);
@@ -93,6 +121,7 @@ export const ChatInterface = ({ isFullPage = false }: ChatInterfaceProps) => {
         legalAidContact: data.legalAidContact,
       };
 
+      playSound('receive');
       setMessages((prev) => [...prev, botMessage]);
     } catch (error) {
       toast({

@@ -1,3 +1,4 @@
+import { useEffect } from "react";
 import AnimatedSection from "@/components/AnimatedSection";
 import { GlassCard } from "@/components/ui/glass-card";
 import { ChatInterface } from "@/components/chat/ChatInterface";
@@ -28,6 +29,10 @@ const features = [
 ];
 
 const NyayikAI = () => {
+  useEffect(() => {
+    window.scrollTo(0, 0);
+  }, []);
+
   return (
     <>
       <section className="section-container pt-32">

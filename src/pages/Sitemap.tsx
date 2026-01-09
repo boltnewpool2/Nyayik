@@ -1,8 +1,13 @@
+import { useEffect } from "react";
 import { Link } from "react-router-dom";
 import AnimatedSection from "@/components/AnimatedSection";
 import { GlassCard } from "@/components/ui/glass-card";
 
 const Sitemap = () => {
+  useEffect(() => {
+    window.scrollTo(0, 0);
+  }, []);
+
   return (
     <section className="section-container pt-28 pb-20">
       <div className="max-w-4xl mx-auto">
